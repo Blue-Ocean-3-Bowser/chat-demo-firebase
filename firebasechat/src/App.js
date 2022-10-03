@@ -52,9 +52,9 @@ function App() {
     <div className="App">
       <section className="App-header">
         {user? <ChatRoom /> : <SignIn />}
+        {/* {user? <SignOut /> : <SignIn />} */}
+
       </section>
-
-
     </div>
   );
 }
@@ -72,7 +72,10 @@ function SignIn() {
 
 function SignOut() {
   return auth.currentUser && (
-    <button className="sign-out" onClick={() => firebase.auth.signOut()}>Sign Out</button>
+    <button className="sign-out" onClick={() =>{
+      firebase.auth.signOut();
+      console.log('Signed out');
+    } }>Sign Out</button>
   )
 }
 
@@ -81,7 +84,6 @@ function ChatRoom() {
   const query = messagesRef.orderBy('createdAt').limit(25);
 
   const [messages] = useCollectionData(query, {idField: 'id'});
-  console.log(messages);
 
   const [formValue, setFormValue] = useState('');
 
@@ -95,6 +97,8 @@ function ChatRoom() {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid
     })
+
+    setFormValue('');
   }
 
   return(
@@ -104,7 +108,7 @@ function ChatRoom() {
           {messages && messages.map(msg => <ChatMessage
           key={msg.id}
           message={msg}
-          id={msg.id}
+          id={msg.idField}
           />)}
         </div>
         <form onSubmit={sendMessage}>
